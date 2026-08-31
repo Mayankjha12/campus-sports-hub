@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as ConcurrencyDemoRouteImport } from './routes/concurrency-demo'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as LoginRouteImport } from './routes/login'
@@ -33,6 +34,11 @@ const AdminRoute = AdminRouteImport.update({
 const BookingsRoute = BookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcurrencyDemoRoute = ConcurrencyDemoRouteImport.update({
+  id: '/concurrency-demo',
+  path: '/concurrency-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/concurrency-demo': typeof ConcurrencyDemoRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/concurrency-demo': typeof ConcurrencyDemoRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/bookings': typeof BookingsRoute
+  '/concurrency-demo': typeof ConcurrencyDemoRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/bookings'
+    | '/concurrency-demo'
     | '/dashboard'
     | '/explore'
     | '/login'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/bookings'
+    | '/concurrency-demo'
     | '/dashboard'
     | '/explore'
     | '/login'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/bookings'
+    | '/concurrency-demo'
     | '/dashboard'
     | '/explore'
     | '/login'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BookingsRoute: typeof BookingsRoute
+  ConcurrencyDemoRoute: typeof ConcurrencyDemoRoute
   DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
   LoginRoute: typeof LoginRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings'
       preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concurrency-demo': {
+      id: '/concurrency-demo'
+      path: '/concurrency-demo'
+      fullPath: '/concurrency-demo'
+      preLoaderRoute: typeof ConcurrencyDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BookingsRoute: BookingsRoute,
+  ConcurrencyDemoRoute: ConcurrencyDemoRoute,
   DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
   LoginRoute: LoginRoute,
