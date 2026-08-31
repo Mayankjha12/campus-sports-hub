@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAllBookings, useFacilities } from "@/hooks/use-sportshub";
-import { supabase } from "@/integrations/supabase/client";
+import { setFacilityStatusFn } from "@/lib/data.server";
 import { buildSlots, facilityImage, formatRange, isoDate, longDate, type FacilityStatus } from "@/lib/sportshub";
 
 export const Route = createFileRoute("/admin")({
@@ -97,8 +97,9 @@ function AdminPage() {
   );
 
   const setStatus = async (facilityId: string, status: FacilityStatus) => {
-    const { error } = await supabase.from("facilities").update({ status }).eq("id", facilityId);
-    if (error) {
+    try {
+      await setFacilityStatusFn({ data: { facilityId, status } });
+    } catch {
       toast.error("Could not update the facility status.");
       return;
     }

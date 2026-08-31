@@ -8,7 +8,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/shared/states
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/hooks/use-sportshub";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { markNotificationsReadFn } from "@/lib/data.server";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({
@@ -39,7 +39,7 @@ function NotificationsPage() {
 
   const markAllRead = async () => {
     if (!user) return;
-    await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
+    await markNotificationsReadFn();
     void queryClient.invalidateQueries({ queryKey: ["notifications"] });
   };
 

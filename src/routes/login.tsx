@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { lovable } from "@/integrations/lovable/index";
-import { supabase } from "@/integrations/supabase/client";
+import { signInFn } from "@/lib/auth.server";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -26,7 +25,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { session } = useAuth();
+  const { session, refresh } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,26 +38,20 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message === "Invalid login credentials" ? "Incorrect email or password." : error.message);
-      return;
-    }
-    toast.success("Welcome back to SportsHub.");
-    navigate({ to: "/dashboard", replace: true });
-  };
-
-  const google = async () => {
-    setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) {
+    try {
+      const result = await signInFn({ data: { email: email.trim(), password } });
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      await refresh();
+      toast.success("Welcome back to SportsHub.");
+      navigate({ to: "/dashboard", replace: true });
+    } catch {
+      toast.error("Something went wrong signing in. Please try again.");
+    } finally {
       setBusy(false);
-      toast.error("Google sign-in failed. Try your college email instead.");
-      return;
     }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
   };
 
   return (
@@ -120,16 +113,6 @@ function LoginPage() {
               Sign in
             </Button>
           </form>
-
-          <div className="flex items-center gap-3">
-            <span className="h-px flex-1 bg-border" />
-            <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
-            <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <Button variant="outline" className="w-full" onClick={google} disabled={busy}>
-            Continue with Google
-          </Button>
 
           <p className="text-center text-sm text-muted-foreground">
             New here?{" "}

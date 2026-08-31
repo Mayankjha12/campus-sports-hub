@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { lovable } from "@/integrations/lovable/index";
-import { supabase } from "@/integrations/supabase/client";
+import { signUpFn } from "@/lib/auth.server";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -26,7 +25,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
-  const { session } = useAuth();
+  const { session, refresh } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -45,33 +44,22 @@ function SignupPage() {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: { full_name: fullName.trim(), student_id: studentId.trim() },
-      },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Account created. You're all set to book.");
-    navigate({ to: "/dashboard", replace: true });
-  };
-
-  const google = async () => {
-    setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) {
+    try {
+      const result = await signUpFn({
+        data: { fullName: fullName.trim(), studentId: studentId.trim(), email: email.trim(), password },
+      });
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      await refresh();
+      toast.success("Account created. You're all set to book.");
+      navigate({ to: "/dashboard", replace: true });
+    } catch {
+      toast.error("Something went wrong creating your account. Please try again.");
+    } finally {
       setBusy(false);
-      toast.error("Google sign-up failed. Try your college email instead.");
-      return;
     }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
   };
 
   return (
@@ -121,9 +109,6 @@ function SignupPage() {
           <Button type="submit" className="w-full" disabled={busy}>
             {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Create account
-          </Button>
-          <Button type="button" variant="outline" className="w-full" onClick={google} disabled={busy}>
-            Continue with Google
           </Button>
         </form>
 
