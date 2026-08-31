@@ -10,12 +10,6 @@ export function AppShell({ children, adminOnly = false, publicAccess = false }: 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!publicAccess && !loading && !session) {
-      navigate({ to: "/login", replace: true });
-    }
-  }, [loading, session, navigate, publicAccess]);
-
-  useEffect(() => {
     if (!loading && session && adminOnly && profile && !isAdmin) {
       navigate({ to: "/dashboard", replace: true });
     }
