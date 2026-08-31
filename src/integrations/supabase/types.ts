@@ -14,16 +14,263 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_date: string
+          created_at: string
+          end_time: string
+          facility_id: string
+          id: string
+          reference: string
+          start_time: string
+          status: Database["public"]["Enums"]["booking_status"]
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string
+          end_time: string
+          facility_id: string
+          id?: string
+          reference: string
+          start_time: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string
+          end_time?: string
+          facility_id?: string
+          id?: string
+          reference?: string
+          start_time?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demo_bookings: {
+        Row: {
+          actor: string
+          booking_date: string
+          created_at: string
+          facility_id: string
+          id: string
+          run_id: string
+          start_time: string
+        }
+        Insert: {
+          actor: string
+          booking_date: string
+          created_at?: string
+          facility_id: string
+          id?: string
+          run_id: string
+          start_time: string
+        }
+        Update: {
+          actor?: string
+          booking_date?: string
+          created_at?: string
+          facility_id?: string
+          id?: string
+          run_id?: string
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_bookings_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facilities: {
+        Row: {
+          capacity: number
+          close_hour: number
+          created_at: string
+          description: string
+          equipment: string[]
+          id: string
+          image_key: string
+          location: string
+          name: string
+          open_hour: number
+          sport: string
+          status: Database["public"]["Enums"]["facility_status"]
+        }
+        Insert: {
+          capacity?: number
+          close_hour?: number
+          created_at?: string
+          description?: string
+          equipment?: string[]
+          id?: string
+          image_key?: string
+          location: string
+          name: string
+          open_hour?: number
+          sport: string
+          status?: Database["public"]["Enums"]["facility_status"]
+        }
+        Update: {
+          capacity?: number
+          close_hour?: number
+          created_at?: string
+          description?: string
+          equipment?: string[]
+          id?: string
+          image_key?: string
+          location?: string
+          name?: string
+          open_hour?: number
+          sport?: string
+          status?: Database["public"]["Enums"]["facility_status"]
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          read: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          read?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          read?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          student_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          student_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          student_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      waitlist: {
+        Row: {
+          booking_date: string
+          created_at: string
+          end_time: string
+          facility_id: string
+          id: string
+          start_time: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string
+          end_time: string
+          facility_id: string
+          id?: string
+          start_time: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string
+          end_time?: string
+          facility_id?: string
+          id?: string
+          start_time?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "admin"
+      booking_status: "confirmed" | "cancelled" | "completed"
+      facility_status: "open" | "closed" | "maintenance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +397,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["student", "admin"],
+      booking_status: ["confirmed", "cancelled", "completed"],
+      facility_status: ["open", "closed", "maintenance"],
+    },
   },
 } as const
