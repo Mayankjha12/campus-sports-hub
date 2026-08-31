@@ -78,6 +78,12 @@ function LoginPage() {
             <p className="text-sm text-muted-foreground">Use your college email to access SportsHub.</p>
           </div>
 
+          <a href="/api/auth/google" className="flex h-10 w-full items-center justify-center gap-2 rounded-md border border-border bg-background text-sm font-medium transition-colors hover:bg-muted">
+            <span className="font-semibold text-primary">G</span>
+            Continue with Google
+          </a>
+          <div className="relative flex items-center py-1"><span className="w-full border-t border-border" /><span className="mx-3 shrink-0 text-xs text-muted-foreground">OR</span><span className="w-full border-t border-border" /></div>
+
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">College email</Label>

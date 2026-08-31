@@ -195,3 +195,4 @@ export const getMeFn = createServerFn({ method: "GET" }).handler(async (): Promi
     isAdmin: user.role === "admin",
   };
 });
+
