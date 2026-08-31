@@ -25,7 +25,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
-  const { session } = useAuth();
+  const { session, refresh } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [studentId, setStudentId] = useState("");

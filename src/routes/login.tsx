@@ -123,15 +123,6 @@ function LoginPage() {
             </Link>
           </p>
 
-          <div className="rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
-            <p className="mb-1 font-semibold text-foreground">Demo accounts</p>
-            <p>Student — student@college.edu / sportshub123</p>
-            <p>Admin — admin@college.edu / sportshub123</p>
-            <p className="mt-1">
-              Sign up with these exact emails once to create them; the admin account is granted admin rights
-              automatically.
-            </p>
-          </div>
         </div>
       </div>
     </div>
