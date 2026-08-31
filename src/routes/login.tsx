@@ -25,7 +25,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { session, refresh } = useAuth();
+  const { session } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,21 +38,16 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    try {
-      const result = await signInFn({ data: { email: email.trim(), password } });
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
-      await refresh();
-      toast.success("Welcome back to SportsHub.");
-      navigate({ to: "/dashboard", replace: true });
-    } catch {
-      toast.error("Something went wrong signing in. Please try again.");
-    } finally {
-      setBusy(false);
+    const result = await signInFn({ data: { email: email.trim(), password } });
+    setBusy(false);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
     }
+    toast.success("Welcome back to SportsHub.");
+    navigate({ to: "/dashboard", replace: true });
   };
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -113,6 +108,13 @@ function LoginPage() {
               Sign in
             </Button>
           </form>
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
 
           <p className="text-center text-sm text-muted-foreground">
             New here?{" "}

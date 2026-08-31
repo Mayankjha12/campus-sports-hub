@@ -25,7 +25,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
-  const { session, refresh } = useAuth();
+  const { session } = useAuth();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -39,27 +39,16 @@ function SignupPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+    setBusy(true);
+    const result = await signUpFn({ data: { fullName: fullName.trim(), studentId: studentId.trim(), email: email.trim(), password } });
+    setBusy(false);
+    if (!result.ok) {
+      toast.error(result.message);
       return;
     }
-    setBusy(true);
-    try {
-      const result = await signUpFn({
-        data: { fullName: fullName.trim(), studentId: studentId.trim(), email: email.trim(), password },
-      });
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
-      await refresh();
-      toast.success("Account created. You're all set to book.");
-      navigate({ to: "/dashboard", replace: true });
-    } catch {
-      toast.error("Something went wrong creating your account. Please try again.");
-    } finally {
-      setBusy(false);
-    }
+    await refresh();
+    toast.success("Account created. You're all set to book.");
+    navigate({ to: "/dashboard", replace: true });
   };
 
   return (
