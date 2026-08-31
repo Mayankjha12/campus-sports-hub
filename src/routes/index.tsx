@@ -1,24 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { LoadingState } from "@/components/shared/states";
+import { useAuth } from "@/hooks/useAuth";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "SportsHub — Book campus sports facilities" },
+      {
+        name: "description",
+        content:
+          "Discover campus courts and grounds, check live availability and lock in your slot. Database-enforced booking means no double bookings, ever.",
+      },
+      { property: "og:title", content: "SportsHub — Book campus sports facilities" },
+      {
+        property: "og:description",
+        content: "Book your game. Own your time. Real-time campus sports facility booking for students.",
+      },
+    ],
+  }),
+  component: Landing,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Landing() {
+  const { session, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    navigate({ to: session ? "/dashboard" : "/login", replace: true });
+  }, [session, loading, navigate]);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-6 text-center">
+        <h1 className="font-display text-3xl font-semibold">SportsHub</h1>
+        <p className="text-sm text-muted-foreground">Book your game. Own your time.</p>
+        <LoadingState label="Loading SportsHub..." />
+      </div>
     </div>
   );
 }
