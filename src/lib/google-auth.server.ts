@@ -1,4 +1,3 @@
-import { getCookie, setCookie } from "@tanstack/react-start/server";
 import { createHmac, randomUUID } from "node:crypto";
 import { getCollections, type AppRole } from "./mongo";
 
@@ -12,7 +11,7 @@ function sign(userId: string, admin: boolean) {
   const body = Buffer.from(JSON.stringify({ sub: userId, admin, exp: Date.now() + SESSION_DAYS * 864e5 })).toString("base64url");
   return `${body}.${createHmac("sha256", secret()).update(body).digest("base64url")}`;
 }
-function issueSession(userId: string, admin: boolean) { setCookie(COOKIE_NAME, sign(userId, admin), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_DAYS * 86400 }); }
+function sessionCookie(userId: string, admin: boolean) { return `${COOKIE_NAME}=${sign(userId, admin)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${process.env.NODE_ENV === "production" ? "; Secure" : ""}`; }
 
 export function googleAuthorizationUrl(origin: string) {
   const clientId = process.env["GOOGLE_CLIENT_ID"];
@@ -36,5 +35,5 @@ export async function completeGoogleSignIn(requestUrl: string): Promise<Response
   if (!profile.email || profile.email_verified === false) return Response.redirect(new URL("/login?error=google_email_unverified", url.origin), 302);
   const { users } = await getCollections(); const email = profile.email.toLowerCase(); let user = await users.findOne({ email });
   if (!user) { const role: AppRole = email === ADMIN_EMAIL ? "admin" : "student"; user = { _id: randomUUID(), email, full_name: profile.name || email.split("@")[0], student_id: null, password_hash: `google:${profile.sub || randomUUID()}`, role, created_at: new Date() }; await users.insertOne(user); }
-  issueSession(user._id, user.role === "admin"); return Response.redirect(new URL("/dashboard", url.origin), 302);
+  return new Response(null, { status: 302, headers: { Location: new URL("/dashboard", url.origin).toString(), "Set-Cookie": sessionCookie(user._id, user.role === "admin") } });
 }
