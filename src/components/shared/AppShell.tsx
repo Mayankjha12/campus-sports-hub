@@ -15,7 +15,7 @@ export function AppShell({ children, adminOnly = false, publicAccess = false }: 
     }
   }, [loading, session, adminOnly, isAdmin, profile, navigate]);
 
-  if (!publicAccess && (loading || !session)) {
+  if (adminOnly && (loading || !session)) {
     return (
       <div className="mx-auto w-full max-w-3xl px-4 py-24">
         <LoadingState label="Checking your session..." />
