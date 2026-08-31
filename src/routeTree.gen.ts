@@ -20,6 +20,8 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as WaitlistRouteImport } from './routes/waitlist'
 import { Route as FacilitiesIdRouteImport } from './routes/facilities.$id'
+import { Route as ApiAuthGoogleRouteImport } from './routes/api.auth.google'
+import { Route as ApiAuthGoogleCallbackRouteImport } from './routes/api.auth.google.callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +78,16 @@ const FacilitiesIdRoute = FacilitiesIdRouteImport.update({
   path: '/facilities/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthGoogleRoute = ApiAuthGoogleRouteImport.update({
+  id: '/api/auth/google',
+  path: '/api/auth/google',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthGoogleCallbackRoute = ApiAuthGoogleCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => ApiAuthGoogleRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +101,8 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
+  '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
+  '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +116,8 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
+  '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
+  '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +132,8 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
+  '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
+  '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +149,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/waitlist'
     | '/facilities/$id'
+    | '/api/auth/google'
+    | '/api/auth/google/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/waitlist'
     | '/facilities/$id'
+    | '/api/auth/google'
+    | '/api/auth/google/callback'
   id:
     | '__root__'
     | '/'
@@ -157,6 +179,8 @@ export interface FileRouteTypes {
     | '/signup'
     | '/waitlist'
     | '/facilities/$id'
+    | '/api/auth/google'
+    | '/api/auth/google/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +195,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   WaitlistRoute: typeof WaitlistRoute
   FacilitiesIdRoute: typeof FacilitiesIdRoute
+  ApiAuthGoogleRoute: typeof ApiAuthGoogleRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -252,8 +277,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacilitiesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/google': {
+      id: '/api/auth/google'
+      path: '/api/auth/google'
+      fullPath: '/api/auth/google'
+      preLoaderRoute: typeof ApiAuthGoogleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/google/callback': {
+      id: '/api/auth/google/callback'
+      path: '/callback'
+      fullPath: '/api/auth/google/callback'
+      preLoaderRoute: typeof ApiAuthGoogleCallbackRouteImport
+      parentRoute: typeof ApiAuthGoogleRoute
+    }
   }
 }
+
+interface ApiAuthGoogleRouteChildren {
+  ApiAuthGoogleCallbackRoute: typeof ApiAuthGoogleCallbackRoute
+}
+
+const ApiAuthGoogleRouteChildren: ApiAuthGoogleRouteChildren = {
+  ApiAuthGoogleCallbackRoute: ApiAuthGoogleCallbackRoute,
+}
+
+const ApiAuthGoogleRouteWithChildren = ApiAuthGoogleRoute._addFileChildren(
+  ApiAuthGoogleRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -267,6 +318,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   WaitlistRoute: WaitlistRoute,
   FacilitiesIdRoute: FacilitiesIdRoute,
+  ApiAuthGoogleRoute: ApiAuthGoogleRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
