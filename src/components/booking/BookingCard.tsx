@@ -18,9 +18,9 @@ export function BookingCard({
   cancelling,
 }: {
   booking: Booking;
-  facility?: Facility;
-  onCancel?: (booking: Booking) => void;
-  cancelling?: boolean;
+  facility?: Facility | undefined;
+  onCancel?: ((booking: Booking) => void) | undefined;
+  cancelling?: boolean | undefined;
 }) {
   return (
     <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-card sm:flex-row sm:items-center sm:p-5">

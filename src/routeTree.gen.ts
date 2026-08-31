@@ -14,7 +14,9 @@ import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as WaitlistRouteImport } from './routes/waitlist'
 import { Route as FacilitiesIdRouteImport } from './routes/facilities.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -42,9 +44,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaitlistRoute = WaitlistRouteImport.update({
+  id: '/waitlist',
+  path: '/waitlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FacilitiesIdRoute = FacilitiesIdRouteImport.update({
@@ -59,7 +71,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/signup': typeof SignupRoute
+  '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
 }
 export interface FileRoutesByTo {
@@ -68,7 +82,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/signup': typeof SignupRoute
+  '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
 }
 export interface FileRoutesById {
@@ -78,7 +94,9 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/signup': typeof SignupRoute
+  '/waitlist': typeof WaitlistRoute
   '/facilities/$id': typeof FacilitiesIdRoute
 }
 export interface FileRouteTypes {
@@ -89,7 +107,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/login'
+    | '/notifications'
     | '/signup'
+    | '/waitlist'
     | '/facilities/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -98,7 +118,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/login'
+    | '/notifications'
     | '/signup'
+    | '/waitlist'
     | '/facilities/$id'
   id:
     | '__root__'
@@ -107,7 +129,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/login'
+    | '/notifications'
     | '/signup'
+    | '/waitlist'
     | '/facilities/$id'
   fileRoutesById: FileRoutesById
 }
@@ -117,7 +141,9 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
   LoginRoute: typeof LoginRoute
+  NotificationsRoute: typeof NotificationsRoute
   SignupRoute: typeof SignupRoute
+  WaitlistRoute: typeof WaitlistRoute
   FacilitiesIdRoute: typeof FacilitiesIdRoute
 }
 
@@ -158,11 +184,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/waitlist': {
+      id: '/waitlist'
+      path: '/waitlist'
+      fullPath: '/waitlist'
+      preLoaderRoute: typeof WaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/facilities/$id': {
@@ -181,7 +221,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
   LoginRoute: LoginRoute,
+  NotificationsRoute: NotificationsRoute,
   SignupRoute: SignupRoute,
+  WaitlistRoute: WaitlistRoute,
   FacilitiesIdRoute: FacilitiesIdRoute,
 }
 export const routeTree = rootRouteImport
