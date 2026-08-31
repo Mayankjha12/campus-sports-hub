@@ -5,15 +5,15 @@ import { Navbar } from "@/components/navbar/Navbar";
 import { LoadingState } from "@/components/shared/states";
 import { useAuth } from "@/hooks/useAuth";
 
-export function AppShell({ children, adminOnly = false }: { children: ReactNode; adminOnly?: boolean }) {
+export function AppShell({ children, adminOnly = false, publicAccess = false }: { children: ReactNode; adminOnly?: boolean; publicAccess?: boolean }) {
   const { session, loading, isAdmin, profile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !session) {
+    if (!publicAccess && !loading && !session) {
       navigate({ to: "/login", replace: true });
     }
-  }, [loading, session, navigate]);
+  }, [loading, session, navigate, publicAccess]);
 
   useEffect(() => {
     if (!loading && session && adminOnly && profile && !isAdmin) {
@@ -21,7 +21,7 @@ export function AppShell({ children, adminOnly = false }: { children: ReactNode;
     }
   }, [loading, session, adminOnly, isAdmin, profile, navigate]);
 
-  if (loading || !session) {
+  if (!publicAccess && (loading || !session)) {
     return (
       <div className="mx-auto w-full max-w-3xl px-4 py-24">
         <LoadingState label="Checking your session..." />

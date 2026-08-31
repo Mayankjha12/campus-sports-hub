@@ -32,7 +32,7 @@ export const Route = createFileRoute("/dashboard")({
     ],
   }),
   component: () => (
-    <AppShell>
+    <AppShell publicAccess>
       <DashboardPage />
     </AppShell>
   ),
