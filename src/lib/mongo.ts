@@ -28,7 +28,7 @@ const globalForMongo = globalThis as unknown as {
 
 function client(): Promise<MongoClient> {
   if (!globalForMongo._mongoClientPromise) {
-    const c = new MongoClient(MONGODB_URI!, { maxPoolSize: 10, retryWrites: true });
+    const c = new MongoClient(mongoUri(), { maxPoolSize: 10, retryWrites: true });
     globalForMongo._mongoClientPromise = c.connect();
   }
   return globalForMongo._mongoClientPromise;
@@ -119,7 +119,7 @@ export interface Collections {
 
 async function database(): Promise<Db> {
   const c = await client();
-  return c.db(MONGODB_DB_NAME);
+  return c.db(dbName());
 }
 
 // ---------- One-time setup: indexes + seed ----------
