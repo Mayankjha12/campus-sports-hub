@@ -33,7 +33,13 @@ export async function completeGoogleSignIn(requestUrl: string): Promise<Response
   if (!profileResponse.ok) return Response.redirect(new URL("/login?error=google_failed", url.origin), 302);
   const profile = await profileResponse.json() as { sub?: string; email?: string; name?: string; email_verified?: boolean };
   if (!profile.email || profile.email_verified === false) return Response.redirect(new URL("/login?error=google_email_unverified", url.origin), 302);
-  const { users } = await getCollections(); const email = profile.email.toLowerCase(); let user = await users.findOne({ email });
-  if (!user) { const role: AppRole = email === ADMIN_EMAIL ? "admin" : "student"; user = { _id: randomUUID(), email, full_name: profile.name || email.split("@")[0], student_id: null, password_hash: `google:${profile.sub || randomUUID()}`, role, created_at: new Date() }; await users.insertOne(user); }
+  const { users } = await getCollections(); const email = profile.email.toLowerCase();
+  let user = await users.findOne({ email });
+  if (!user) {
+    const role: AppRole = email === ADMIN_EMAIL ? "admin" : "student";
+    const created = { _id: randomUUID(), email, full_name: profile.name || email.split("@")[0] || email, student_id: null, password_hash: `google:${profile.sub || randomUUID()}`, role, created_at: new Date() };
+    await users.insertOne(created);
+    user = created;
+  }
   return new Response(null, { status: 302, headers: { Location: new URL("/dashboard", url.origin).toString(), "Set-Cookie": sessionCookie(user._id, user.role === "admin") } });
 }
