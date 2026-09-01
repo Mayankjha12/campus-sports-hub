@@ -171,7 +171,7 @@ async function runSetup(): Promise<void> {
 function ensureSetup(): Promise<void> {
   if (!globalForMongo._mongoSetupPromise) {
     globalForMongo._mongoSetupPromise = runSetup().catch((err) => {
-      globalForMongo._mongoSetupPromise = undefined;
+      delete globalForMongo._mongoSetupPromise;
       throw err;
     });
   }

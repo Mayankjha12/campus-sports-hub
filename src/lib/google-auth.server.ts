@@ -11,7 +11,7 @@ function sign(userId: string, admin: boolean) {
   const body = Buffer.from(JSON.stringify({ sub: userId, admin, exp: Date.now() + SESSION_DAYS * 864e5 })).toString("base64url");
   return `${body}.${createHmac("sha256", secret()).update(body).digest("base64url")}`;
 }
-function sessionCookie(userId: string, admin: boolean) { return `${COOKIE_NAME}=${sign(userId, admin)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${process.env.NODE_ENV === "production" ? "; Secure" : ""}`; }
+function sessionCookie(userId: string, admin: boolean) { return `${COOKIE_NAME}=${sign(userId, admin)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${process.env["NODE_ENV"] === "production" ? "; Secure" : ""}`; }
 
 export function googleAuthorizationUrl(origin: string) {
   const clientId = process.env["GOOGLE_CLIENT_ID"];
