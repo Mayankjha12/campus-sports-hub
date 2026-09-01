@@ -8,11 +8,16 @@ import { MongoClient, type Db, type Collection } from "mongodb";
  * reaches the browser bundle.
  */
 
-const MONGODB_URI = process.env["MONGODB_URI"];
-const MONGODB_DB_NAME = process.env["MONGODB_DB_NAME"] || "campus_sports_hub";
+// Read env lazily: throwing at module scope turns a missing variable into a
+// blank screen for every route instead of a handled error in one call.
+function mongoUri(): string {
+  const uri = process.env["MONGODB_URI"];
+  if (!uri) throw new Error("Missing MONGODB_URI environment variable.");
+  return uri;
+}
 
-if (!MONGODB_URI) {
-  throw new Error("Missing MONGODB_URI environment variable.");
+function dbName(): string {
+  return process.env["MONGODB_DB_NAME"] || "campus_sports_hub";
 }
 
 // Reuse the client across hot reloads (dev) and warm serverless invocations (prod).
@@ -23,7 +28,7 @@ const globalForMongo = globalThis as unknown as {
 
 function client(): Promise<MongoClient> {
   if (!globalForMongo._mongoClientPromise) {
-    const c = new MongoClient(MONGODB_URI!, { maxPoolSize: 10, retryWrites: true });
+    const c = new MongoClient(mongoUri(), { maxPoolSize: 10, retryWrites: true });
     globalForMongo._mongoClientPromise = c.connect();
   }
   return globalForMongo._mongoClientPromise;
@@ -114,7 +119,7 @@ export interface Collections {
 
 async function database(): Promise<Db> {
   const c = await client();
-  return c.db(MONGODB_DB_NAME);
+  return c.db(dbName());
 }
 
 // ---------- One-time setup: indexes + seed ----------
@@ -171,7 +176,7 @@ async function runSetup(): Promise<void> {
 function ensureSetup(): Promise<void> {
   if (!globalForMongo._mongoSetupPromise) {
     globalForMongo._mongoSetupPromise = runSetup().catch((err) => {
-      globalForMongo._mongoSetupPromise = undefined;
+      delete globalForMongo._mongoSetupPromise;
       throw err;
     });
   }

@@ -11,7 +11,7 @@ function sign(userId: string, admin: boolean) {
   const body = Buffer.from(JSON.stringify({ sub: userId, admin, exp: Date.now() + SESSION_DAYS * 864e5 })).toString("base64url");
   return `${body}.${createHmac("sha256", secret()).update(body).digest("base64url")}`;
 }
-function sessionCookie(userId: string, admin: boolean) { return `${COOKIE_NAME}=${sign(userId, admin)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${process.env.NODE_ENV === "production" ? "; Secure" : ""}`; }
+function sessionCookie(userId: string, admin: boolean) { return `${COOKIE_NAME}=${sign(userId, admin)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${process.env["NODE_ENV"] === "production" ? "; Secure" : ""}`; }
 
 export function googleAuthorizationUrl(origin: string) {
   const clientId = process.env["GOOGLE_CLIENT_ID"];
@@ -33,7 +33,13 @@ export async function completeGoogleSignIn(requestUrl: string): Promise<Response
   if (!profileResponse.ok) return Response.redirect(new URL("/login?error=google_failed", url.origin), 302);
   const profile = await profileResponse.json() as { sub?: string; email?: string; name?: string; email_verified?: boolean };
   if (!profile.email || profile.email_verified === false) return Response.redirect(new URL("/login?error=google_email_unverified", url.origin), 302);
-  const { users } = await getCollections(); const email = profile.email.toLowerCase(); let user = await users.findOne({ email });
-  if (!user) { const role: AppRole = email === ADMIN_EMAIL ? "admin" : "student"; user = { _id: randomUUID(), email, full_name: profile.name || email.split("@")[0], student_id: null, password_hash: `google:${profile.sub || randomUUID()}`, role, created_at: new Date() }; await users.insertOne(user); }
+  const { users } = await getCollections(); const email = profile.email.toLowerCase();
+  let user = await users.findOne({ email });
+  if (!user) {
+    const role: AppRole = email === ADMIN_EMAIL ? "admin" : "student";
+    const created = { _id: randomUUID(), email, full_name: profile.name || email.split("@")[0] || email, student_id: null, password_hash: `google:${profile.sub || randomUUID()}`, role, created_at: new Date() };
+    await users.insertOne(created);
+    user = created;
+  }
   return new Response(null, { status: 302, headers: { Location: new URL("/dashboard", url.origin).toString(), "Set-Cookie": sessionCookie(user._id, user.role === "admin") } });
 }
