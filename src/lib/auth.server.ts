@@ -136,7 +136,7 @@ export const signUpFn = createServerFn({ method: "POST" })
     const user = {
       _id: crypto.randomUUID(),
       email,
-      full_name: data.fullName || email.split("@")[0],
+      full_name: data.fullName || email.split("@")[0] || email,
       student_id: data.studentId ? data.studentId : null,
       password_hash: hashPassword(data.password),
       role,
