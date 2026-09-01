@@ -8,11 +8,16 @@ import { MongoClient, type Db, type Collection } from "mongodb";
  * reaches the browser bundle.
  */
 
-const MONGODB_URI = process.env["MONGODB_URI"];
-const MONGODB_DB_NAME = process.env["MONGODB_DB_NAME"] || "campus_sports_hub";
+// Read env lazily: throwing at module scope turns a missing variable into a
+// blank screen for every route instead of a handled error in one call.
+function mongoUri(): string {
+  const uri = process.env["MONGODB_URI"];
+  if (!uri) throw new Error("Missing MONGODB_URI environment variable.");
+  return uri;
+}
 
-if (!MONGODB_URI) {
-  throw new Error("Missing MONGODB_URI environment variable.");
+function dbName(): string {
+  return process.env["MONGODB_DB_NAME"] || "campus_sports_hub";
 }
 
 // Reuse the client across hot reloads (dev) and warm serverless invocations (prod).
